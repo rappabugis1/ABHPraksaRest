@@ -7,3 +7,23 @@ GET     /                           controllers.HomeController.index
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+
+POST /app/register                      controllers.UserController.registerUser
+
+POST /app/login                      controllers.UserController.loginUser
+
+POST /app/admin/addCategory       controllers.CategoriesAdmin.addCategory
+
+POST /app/admin/addRestaurant   controllers.RestaurantController.addRestaurant
+
+POST /app/getRestaurantDetails  controllers.RestaurantController.getRestaurantDetails
+
+POST /app/insertComment   controllers.RestaurantController.insertComment
+
+GET /app/getRestaurantLocations controllers.RestaurantController.getRestaurantLocations
+
+GET /app/getAllCategories  controllers.RestaurantController.getAllCategories
+
+GET /app/getRandomRestaurants controllers.RestaurantController.getRandomRestaurants
+
+POST /app/getRestaurantMenu controllers.RestaurantController.getRestaurantMenu
