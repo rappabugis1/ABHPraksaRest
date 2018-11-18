@@ -24,7 +24,7 @@ angular.module('clientApp')
             $localStorage.currentUser = {currentUser: response, token: response.headers('Authorization')};
 
             // add jwt token to auth header for all requests made by the $http service
-            $http.defaults.headers.common.Authorization = response.headers('Authorization');
+            $http.defaults.headers.common.Authorization ="Bearer "+response.headers('Authorization');
 
             // execute callback with true to indicate successful login
             callback(true);
@@ -43,14 +43,15 @@ angular.module('clientApp')
 
     function Register(payload, callback) {
       $http.post('app/register', payload)
-        .then(function onSucces() {
+        .then(function onSucces(response) {
 
-          callback(true);
+          callback(response.data);
 
         })
         .catch(function onError() {
-
-          callback(false);
+          if(error.status===400){
+            callback(error);
+          }
 
         });
     }

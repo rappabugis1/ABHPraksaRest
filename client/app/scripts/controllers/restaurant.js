@@ -8,8 +8,13 @@
  * Controller of the clientApp
  */
 angular.module('clientApp')
-  .controller('RestaurantController', function ($http, $scope, ShareDataService, RestaurantService) {
+  .controller('RestaurantController', function ($http, $scope, SessionStorageService, RestaurantService, $uibModalStack) {
 
+    $scope.$on('$locationChangeStart', handleLocationChange);
+
+    function handleLocationChange() {
+      $uibModalStack.dismissAll();
+    }
 
     $scope.initialize = function (a, b) {
       $scope.mapOptions = {
@@ -49,14 +54,15 @@ angular.module('clientApp')
       return ratings;
     };
 
-    RestaurantService.getRestaurantDetails(ShareDataService.get().id).then(function (response) {
+    RestaurantService.getRestaurantDetails(JSON.parse(SessionStorageService.get("restaurantId")).id).then(function (response) {
       $scope.restaurant = response.data;
       $scope.loadScript($scope.restaurant.latitude, $scope.restaurant.longitude);
     });
 
   })
 
-  .controller('ReviewCtrl', function ($scope, $uibModal, $document, $log, $location, $localStorage, RestaurantService, ShareDataService) {
+
+  .controller('ReviewController', function ($scope, $uibModal, $document, $log, $location, $localStorage, RestaurantService, SessionStorageService) {
 
     var $ctrl = this;
 
@@ -72,7 +78,7 @@ angular.module('clientApp')
           ariaLabelledBy: 'modal-title',
           ariaDescribedBy: 'modal-body',
           templateUrl: 'myModalContent.html',
-          controller: 'ModalInstanceCtrl',
+          controller: 'ModalInstanceController',
           controllerAs: '$ctrl',
           size: size,
           appendTo: parentElem
@@ -83,9 +89,8 @@ angular.module('clientApp')
             comment: payload.comment,
             mark: payload.mark,
             idUser: $localStorage.currentUser.currentUser.data.id,
-            idRestaurant: ShareDataService.get().id
+            idRestaurant: JSON.parse(SessionStorageService.get("restaurantId")).id
           };
-          $log.info(payload);
           RestaurantService.insertComment(payload);
 
         }, function () {
@@ -100,7 +105,7 @@ angular.module('clientApp')
 
   })
 
-  .controller('ModalInstanceCtrl', function ($uibModalInstance, $scope) {
+  .controller('ModalInstanceController', function ($uibModalInstance, $scope) {
     var $ctrl = this;
 
     $scope.rate = 3;
@@ -121,16 +126,16 @@ angular.module('clientApp')
     };
   })
 
-  .controller('MenuCtr', function ($scope, RestaurantService, ShareDataService, $log) {
+  .controller('MenuController', function ($scope, RestaurantService, SessionStorageService) {
     var $menu = this;
 
     $scope.arrayDishes = [];
 
     $menu.getMenu = function (type) {
-      RestaurantService.getMenu(type.toString(), ShareDataService.get().id).then(function (response) {
+      RestaurantService.getMenu(type.toString(), JSON.parse(SessionStorageService.get("restaurantId")).id).then(function (response) {
         var menuData = response.data;
-        var dishTypes = new Array;
-        var arrayDishesLoc = new Array(0);
+        var dishTypes = [];
+        var arrayDishesLoc = [];
 
         menuData.forEach(function (element) {
           if (!dishTypes.includes(element.dishType)) {

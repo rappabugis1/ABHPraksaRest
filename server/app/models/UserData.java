@@ -31,7 +31,7 @@ public class UserData extends Model {
     @Size(min=6)
     private String phone;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
     private User user;
 
     @ManyToOne(cascade = CascadeType.ALL,optional = false)

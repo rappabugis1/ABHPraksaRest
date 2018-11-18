@@ -9,11 +9,14 @@
  */
 angular.module('clientApp')
   .service('ShareDataService', function () {
+
+    //this is for sharing data between controllers
+
     var data;
-    this.add = function (dataSend) {
+    this.addData = function (dataSend) {
       data = dataSend;
     };
-    this.get = function () {
+    this.getData = function () {
       return data;
     };
   });

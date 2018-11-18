@@ -52,16 +52,21 @@ create table menus (
 create table reservations (
   id                            bigserial not null,
   persons                       integer not null,
-  reservation_date_time         varchar(255) not null,
-  user_id                       bigint,
-  restaurant_id                 bigint,
+  reservation_date_time         timestamptz not null,
+  reservation_end_date_time     timestamptz not null,
+  request                       varchar(255),
+  temp                          boolean,
+  time_created                  timestamptz not null,
+  user_id                       bigint not null,
+  restaurant_id                 bigint not null,
+  table_id                      bigint not null,
   constraint pk_reservations primary key (id)
 );
 
 create table restaurants (
   id                            bigserial not null,
   restaurant_name               varchar(255) not null,
-  description                   varchar(255) not null,
+  description                   varchar(2000) not null,
   price_range                   integer not null,
   latitude                      float not null,
   longitude                     float not null,
@@ -80,7 +85,7 @@ create table restaurant_categories (
 create table reviews (
   id                            bigserial not null,
   mark                          integer not null,
-  comment                       varchar(255) not null,
+  comment                       varchar(500) not null,
   insert_time                   varchar(255) not null,
   user_id                       bigint not null,
   restaurant_id                 bigint not null,
@@ -109,7 +114,7 @@ create table user_data (
   firstname                     varchar(255) not null,
   last_name                     varchar(255) not null,
   phone                         varchar(255) not null,
-  user_id                       bigint,
+  user_id                       bigint not null,
   location_id                   bigint not null,
   constraint uq_user_data_user_id unique (user_id),
   constraint pk_user_data primary key (id)
@@ -132,6 +137,9 @@ create index ix_reservations_user_id on reservations (user_id);
 
 alter table reservations add constraint fk_reservations_restaurant_id foreign key (restaurant_id) references restaurants (id) on delete restrict on update restrict;
 create index ix_reservations_restaurant_id on reservations (restaurant_id);
+
+alter table reservations add constraint fk_reservations_table_id foreign key (table_id) references tables (id) on delete restrict on update restrict;
+create index ix_reservations_table_id on reservations (table_id);
 
 alter table restaurants add constraint fk_restaurants_location_id foreign key (location_id) references locations (id) on delete restrict on update restrict;
 create index ix_restaurants_location_id on restaurants (location_id);
@@ -176,6 +184,9 @@ drop index if exists ix_reservations_user_id;
 
 alter table if exists reservations drop constraint if exists fk_reservations_restaurant_id;
 drop index if exists ix_reservations_restaurant_id;
+
+alter table if exists reservations drop constraint if exists fk_reservations_table_id;
+drop index if exists ix_reservations_table_id;
 
 alter table if exists restaurants drop constraint if exists fk_restaurants_location_id;
 drop index if exists ix_restaurants_location_id;
