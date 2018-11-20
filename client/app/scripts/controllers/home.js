@@ -9,7 +9,7 @@
  */
 angular.module('clientApp')
 
-  .controller('HomeController', function ($scope, $http, SessionStorageService, $location, RestaurantService, $log){
+  .controller('HomeController', function ($scope, $http, SessionStorageService, $location, RestaurantService){
 
     $scope.dishes = [
       {
@@ -28,11 +28,23 @@ angular.module('clientApp')
         "numRestaurants": 16
       },
       {
-        "heading": "Cupcakes Flavor",
-        "location": "Chicago",
-        "numRestaurants": 11
+        "heading": "Best baklava",
+        "location": "New York",
+        "numRestaurants": 43
+      },
+      {
+        "heading": "Best burek",
+        "location": "Sarajevo",
+        "numRestaurants": 28
+      },
+      {
+        "heading": "Fresh and Spicy 2",
+        "location": "Philladelphia",
+        "numRestaurants": 16
       }
     ];
+
+    $scope.numberRepeat=Math.ceil($scope.dishes.length/3);
 
     $scope.range = function (count) {
 
@@ -54,10 +66,17 @@ angular.module('clientApp')
       $scope.restaurants = response.data;
     });
 
+  })
+
+  .controller('PopularLocationsController', function ($scope, RestaurantService, SessionStorageService, $location) {
     RestaurantService.getRestaurantLocations().then(function (response) {
       $scope.popularLocations = response.data;
     });
 
+    $scope.filterLocations= function (name) {
+      SessionStorageService.save("locationSearch", JSON.stringify(name));
+      $location.path('/restaurants');
+    };
 
   })
 

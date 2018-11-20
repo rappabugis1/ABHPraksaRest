@@ -1,5 +1,6 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import io.ebean.Finder;
 import io.ebean.Model;
 
@@ -13,10 +14,15 @@ import javax.validation.constraints.Size;
 @Table(name = "dish_types")
 public class DishType extends Model {
 
+    public DishType(String type) {
+        this.type = type;
+    }
+
     @Id
     public Long id;
 
     @Column(nullable = false, unique = true)
+    @JsonValue
     private String type;
 
     public static final Finder<Long, DishType> finder = new Finder<>(DishType.class);

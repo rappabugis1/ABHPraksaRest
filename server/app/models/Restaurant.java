@@ -1,6 +1,7 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.ebean.Finder;
 import io.ebean.Model;
 
@@ -12,11 +13,113 @@ import java.util.List;
 @Table(name = "restaurants")
 public class Restaurant extends Model {
 
+    public Restaurant(String restaurantName, String description, float latitude, float longitude, String imageFileName, String coverFileName, int priceRange) {
+        this.restaurantName = restaurantName;
+        this.description = description;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.imageFileName = imageFileName;
+        this.coverFileName = coverFileName;
+        this.priceRange= priceRange;
+    }
+
     @Id
     public Long id;
 
     @Column(nullable = false, name = "restaurant_name")
     private String restaurantName;
+
+    @Column(nullable = false, length = 2000)
+    private String description;
+
+    @Column(nullable = false, name = "price_range")
+    private int priceRange;
+
+    @Column(nullable = false)
+    private float latitude;
+
+    @Column(nullable = false)
+    private float longitude;
+
+    @Column(nullable = false, name = "image_file_name")
+    private String imageFileName;
+
+    @Column(nullable = false, name="cover_file_name")
+    private String coverFileName;
+
+    private int mark =average();
+
+    @ManyToOne(cascade = CascadeType.ALL,optional = false)
+    @JsonProperty("location_id")
+    Location location;
+
+
+    @ManyToMany(mappedBy = "restaurants")
+    @JoinTable(
+            name="categories_restaurants",
+            joinColumns = @JoinColumn(name="restaurant_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id", referencedColumnName = "id")
+    )
+    @JsonIgnore
+    List<Category> categoryList;
+
+    @OneToMany (cascade = CascadeType.ALL, mappedBy = "restaurant")
+    @JsonIgnore
+    List<Review> reviewList;
+
+    @OneToMany (cascade = CascadeType.ALL, mappedBy = "restaurant")
+    @JsonIgnore
+    List<Menu> menus;
+
+    @OneToMany (cascade = CascadeType.ALL, mappedBy = "restaurant")
+    @JsonIgnore
+    List<models.Table> tableList;
+
+    @OneToMany( cascade = CascadeType.ALL, mappedBy = "restaurant" )
+    @JsonIgnore
+    List<Reservation> reservationList;
+
+    @JsonProperty("foodType")
+    private String foodType (){
+        StringBuilder foodType= new StringBuilder();
+        for (Category cat: this.categoryList
+             ) {
+            foodType.append(cat.getName()).append(" | ");
+        }
+        foodType.setLength(foodType.length()-2);
+        return foodType.toString();
+    }
+
+    @JsonProperty("mark")
+    private int average(){
+        int avg = 0;
+
+        for (Review review : this.reviewList) {
+            avg += review.getMark();
+        }
+
+        if (avg > 0 && this.reviewList.size() > 0)
+            avg /= this.reviewList.size();
+        else
+            avg = 0;
+
+        return avg;
+    }
+
+    @JsonProperty("votes")
+    private int votes(){
+        return reviewList.size();
+    }
+
+    //Getters and setters
+
+    public List<Review> getReviewList() {
+        return reviewList;
+    }
+
+    public void setReviewList(List<Review> reviewList) {
+        this.reviewList = reviewList;
+    }
 
     public String getRestaurantName() {
         return restaurantName;
@@ -82,60 +185,25 @@ public class Restaurant extends Model {
         this.location = location;
     }
 
-    public List<Category> getCategories() {
-        return categories;
+    public List<Category> getCategoryList() {
+        return categoryList;
     }
 
-    public void setCategories(List<Category> categories) {
-        this.categories = categories;
+    public void setCategoryList(List<Category> categoryList) {
+        this.categoryList = categoryList;
     }
 
     public static Finder<Long, Restaurant> getFinder() {
         return finder;
     }
 
-    @Column(nullable = false, length = 2000)
-    private String description;
-
-    @Column(nullable = false, name = "price_range")
-    private int priceRange;
-
-    @Column(nullable = false)
-    private float latitude;
-
-    @Column(nullable = false)
-    private float longitude;
-
-    @Column(nullable = false, name = "image_file_name")
-    private String imageFileName;
-
-    @Column(nullable = false, name="cover_file_name")
-    private String coverFileName;
-
-    @ManyToOne(cascade = CascadeType.ALL,optional = false)
-    Location location;
-
-    public List<Review> getReviews() {
-        return reviews;
+    public List<models.Table> getTableList() {
+        return tableList;
     }
 
-    public void setReviews(List<Review> reviews) {
-        this.reviews = reviews;
+    public void setTableList(List<models.Table> tableList) {
+        this.tableList = tableList;
     }
-
-    @ManyToMany
-            @JoinTable(
-                    name="restaurant_categories",
-                    joinColumns = @JoinColumn(name="restaurant_id", referencedColumnName = "id"),
-                    inverseJoinColumns = @JoinColumn(name = "category_id", referencedColumnName = "id")
-            )
-    List<Category> categories;
-
-    @OneToMany (cascade = CascadeType.ALL, mappedBy = "restaurant")
-    List<Review> reviews;
-
-    @OneToMany (cascade = CascadeType.ALL, mappedBy = "restaurant")
-    List<Menu> menus;
 
     public List<Menu> getMenus() {
         return menus;
@@ -145,6 +213,13 @@ public class Restaurant extends Model {
         this.menus = menus;
     }
 
-    public static final Finder<Long, Restaurant> finder = new Finder<>(Restaurant.class);
+    public List<Reservation> getReservationList() {
+        return reservationList;
+    }
 
+    public void setReservationList(List<Reservation> reservationList) {
+        this.reservationList = reservationList;
+    }
+
+    public static final Finder<Long, Restaurant> finder = new Finder<>(Restaurant.class);
 }

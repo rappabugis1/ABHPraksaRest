@@ -3,7 +3,6 @@ package daos.implementations;
 import daos.interfaces.ReservationDao;
 import models.Reservation;
 import models.Table;
-
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -49,11 +48,12 @@ public class ReservationDaoImpl implements ReservationDao {
     //Edit
 
     @Override
-    public void setReservationToFixed(Long id) throws Exception {
+    public void setReservationToFixed(Long id, String request) throws Exception {
         Reservation tempReservation = getReservationById(id);
         if(tempReservation==null)
             throw new Exception("Reservation does not exist");
 
+        tempReservation.setRequest(request);
         tempReservation.setTemp(false);
         tempReservation.update();
     }

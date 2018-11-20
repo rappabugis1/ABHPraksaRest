@@ -10,11 +10,14 @@
 angular.module('clientApp')
   .controller('LoginController', function ($log, $scope, $location, AuthenticationService, SessionStorageService, $window) {
 
-
+    $window.scrollTo(0,0);
     function initController() {
       AuthenticationService.Logout();
     }
 
+    $scope.$watchGroup(['email','password'] ,function () {
+      $scope.error=null;
+    });
     initController();
     $scope.loginSubmit = function (isValid) {
 
@@ -24,9 +27,12 @@ angular.module('clientApp')
           password: $scope.password
         };
 
+        $scope.loading=true;
 
         AuthenticationService.Login(payload.email, payload.password, function (result) {
-            if (result === true) {
+          $scope.loading=false;
+
+          if (result === true) {
               //If there is a goBack value, after login the window is restored to previous one
               if(SessionStorageService.get("goBack")){
                 SessionStorageService.delete("goBack");

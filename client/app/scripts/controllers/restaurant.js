@@ -8,13 +8,28 @@
  * Controller of the clientApp
  */
 angular.module('clientApp')
-  .controller('RestaurantController', function ($http, $scope, SessionStorageService, RestaurantService, $uibModalStack) {
+  .controller('RestaurantController', function ($http, $scope, SessionStorageService, RestaurantService, $uibModalStack, $location, anchorSmoothScroll) {
+
+    //Get comments
+
+    RestaurantService.getAllRestaurantComments(JSON.parse(SessionStorageService.get("restaurantId")).id, function (response) {
+      $scope.reviews = response;
+
+      $scope.noReviews = !($scope.reviews.length > 0);
+
+    });
 
     $scope.$on('$locationChangeStart', handleLocationChange);
 
     function handleLocationChange() {
       $uibModalStack.dismissAll();
     }
+
+    $scope.goTo = function(anchor){
+
+        $location.hash(anchor);
+        anchorSmoothScroll.scrollTo(anchor);
+    };
 
     $scope.initialize = function (a, b) {
       $scope.mapOptions = {
@@ -62,7 +77,7 @@ angular.module('clientApp')
   })
 
 
-  .controller('ReviewController', function ($scope, $uibModal, $document, $log, $location, $localStorage, RestaurantService, SessionStorageService) {
+  .controller('ReviewController', function ($scope, $uibModal, $document, $location, $localStorage, RestaurantService, SessionStorageService) {
 
     var $ctrl = this;
 
@@ -94,9 +109,9 @@ angular.module('clientApp')
           RestaurantService.insertComment(payload);
 
         }, function () {
-          $log.info('Modal dismissed at: ' + new Date());
         });
       } else {
+        SessionStorageService.save("goBack", true);
         $location.path('/login');
       }
 
@@ -175,5 +190,47 @@ angular.module('clientApp')
     $menu.getMenu('Dinner');
 
   })
-;
+  .service('anchorSmoothScroll', function(){
+
+    this.scrollTo = function(eID) {
+
+      var startY = currentYPosition();
+      var stopY = document.getElementById(eID).offsetTop+200;
+      var distance = stopY > startY ? stopY - startY : startY - stopY;
+      if (distance < 100) {
+        scrollTo(0, stopY); return;
+      }
+      var speed = 18;
+      var step = Math.round(distance / 25);
+      var leapY = stopY > startY ? startY + step : startY - step;
+      var timer = 0;
+
+      if (stopY > startY) {
+        for ( var i=startY; i<stopY; i+=step ) {
+          setTimeout("window.scrollTo(0, "+leapY+")", timer * speed);
+          leapY += step; if (leapY > stopY) leapY = stopY; timer++;
+        } return;
+      }
+      for ( var i=startY; i>stopY; i-=step ) {
+        setTimeout("window.scrollTo(0, "+leapY+")", timer * speed);
+        leapY -= step; if (leapY < stopY) leapY = stopY; timer++;
+      }
+
+      function currentYPosition() {
+        // Firefox, Chrome, Opera, Safari
+        if (self.pageYOffset) return self.pageYOffset;
+        // Internet Explorer 6 - standards mode
+        if (document.documentElement && document.documentElement.scrollTop)
+          return document.documentElement.scrollTop;
+        // Internet Explorer 6, 7 and 8
+        if (document.body.scrollTop) return document.body.scrollTop;
+        return 0;
+      }
+
+
+
+    };
+
+  });
+
 

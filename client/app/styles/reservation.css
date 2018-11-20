@@ -101,6 +101,7 @@ h4 {
   border-style: solid;
   border-radius: 5px;
   border-color: coral;
+  margin-top: 10px;
 }
 
 .col-input {
@@ -132,3 +133,11 @@ select.input-lg {
   box-shadow: 0 0 4px coral;
 
 }
+
+
+.alert-expired{
+  margin-top: 50px;
+  margin-bottom: 200px;
+}
+
+

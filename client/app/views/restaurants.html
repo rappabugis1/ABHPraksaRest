@@ -1,0 +1,121 @@
+<head>
+  <link rel="stylesheet" href="../styles/home.css">
+  <link rel="stylesheet" href="../styles/restaurants.css">
+</head>
+
+<body >
+
+  <div class="container text-center container-restaurants filter-container">
+
+    <div class="row no-gutters form-row search-filter-row">
+      <form ng-submit="filter()" >
+        <div class="col-xs-12 col-md-10 search-filter-col">
+          <input type="search" ng-model="searchText" class="form-control form-control-lg" placeholder="Location, Restaurant or Cousine ">
+        </div>
+
+        <div class="col-xs-12 col-md-1 search-filter-col">
+          <div class="btn-group" uib-dropdown  auto-close="outsideClick">
+            <button id="single-button" type="button" class="btn filter-dropdown btn-primary btn-block" uib-dropdown-toggle ng-disabled="disabled">
+              Filter by <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
+              <li role="menuitem" >
+                <ul class="list-inline filter-inline-drop">
+                  <li class="filter-item">
+                    <ul class="list-unstyled">
+                      <li >
+                        <h5 class="filter-heading">PRICE</h5>
+                      </li>
+                      <li>
+                        <span uib-rating ng-model="price" class="rate" on-leave="overStar = null" state-on="'glyphicon glyphicon-usd glyph-filter-full'" state-off="'glyphicon glyphicon-usd glyph-filter-empty'" aria-labelledby="default-rating"></span>
+                      </li>
+                    </ul>
+                  </li>
+                  <li class="filter-item">
+                    <ul class="list-unstyled">
+                      <li >
+                        <h5 class="filter-heading">RATING</h5>
+                      </li>
+                      <li>
+                        <span uib-rating ng-model="rate" class="rate" on-leave="overStar = null" state-on="'glyphicon glyphicon-star glyph-filter-full'" state-off="'glyphicon glyphicon-star-empty glyph-filter-empty'" aria-labelledby="default-rating"></span>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li class="divider"></li>
+              <li role="menuitem" class="filter-item">
+                <h5 class="filter-heading">COUSINE</h5>
+              </li>
+              <li role="menuitem" >
+                <ul class="list-inline filter-inline-drop">
+                  <li class="filter-item">
+                    <select  multiple="multiple" id="categorymultipleleft" ng-model="categoriesLeft[$index]" ng-options="category.name for category in categories.left track by category.id" size="{{categories.left.length+categories.left.length/2}}"></select>
+                  </li>
+                  <li class="filter-item">
+                    <select  multiple="multiple" id="categorymultipleright" ng-model="categoriesRight[$index]" ng-options="category.name for category in categories.right track by category.id" size="{{categories.right.length+categories.right.length/2}}"></select>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-xs-12 col-md-1 search-filter-col">
+          <button type="submit" class="btn btn-block btn-primary form-btn">Search</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="row filter-row ">
+      <img src="../images/ajax-loader.gif" ng-show="loading" />
+      <div class="no-results" ng-show="noResults">
+        <h3>No restaurants where found!</h3>
+      </div>
+
+      <div class="col-sm-6 col-md-4 " ng-repeat="y in restaurants" ng-show="!loading && !noResults">
+        <div class="card">
+          <img ng-src="{{y.imageFileName}}">
+          <div class="container">
+            <h3>
+              {{y.restaurantName}}
+            </h3>
+            <ul class="list list-inline ">
+              <li>
+                <span class="glyphicon glyphicon-star " ng-repeat="n in range(y.mark)"></span><span
+                class="glyphicon glyphicon-star-empty " ng-repeat="n in range(5-y.mark)"></span>
+              </li>
+              <li>
+                <span>({{y.votes}})</span>
+              </li>
+              <li>
+                <span class="glyphicon glyphicon-usd dolar-full" ng-repeat="n in range(y.priceRange)"></span><span
+                class="glyphicon  glyphicon-usd dolar-empty" ng-repeat="n in range(5-y.priceRange)"></span>
+              </li>
+            </ul>
+            <hr>
+            <p style="color: gray">
+              {{y.foodType}}
+            </p>
+          </div>
+          <button type="button" class="btn btn-block " ng-click="save(y)">Reserve Now</button>
+        </div>
+      </div>
+    </div>
+    <ul uib-pagination total-items="numPages" ng-model="bigCurrentPage" max-size="maxSize" class="pagination-sm" boundary-link-numbers="true" ng-change="filter()" ng-show="!noResults"></ul>
+
+  </div>
+
+
+  <div class="container popular-loc">
+    <h3 class="text-center">Popular locations</h3>
+    <div class="row popular-locations-row">
+      <div class="col-xs-6 col-sm-3 col-md-3 text-left " ng-model="name" ng-repeat="name in popularLocations">
+        <button class="btn-location center-block pop-loc-info" ng-click="filterLocations(name.location)">
+          <h4 >{{name.location}}</h4>
+          <p class="number">{{name.num}} restaurants</p>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</body>

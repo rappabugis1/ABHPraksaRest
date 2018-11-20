@@ -1,8 +1,7 @@
 package models;
-
+import com.fasterxml.jackson.annotation.JsonValue;
 import io.ebean.Finder;
 import io.ebean.Model;
-
 import javax.persistence.*;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
@@ -12,30 +11,35 @@ import javax.validation.constraints.Size;
 public class Location extends Model {
 
     @Id
+    @JsonValue
     public Long id;
 
-    public Location(String city, Country country) {
-        this.city = city;
+    public Location(String name, Country country) {
+        this.name = name;
         this.country = country;
+    }
+
+    public Location(String name) {
+        this.name = name;
     }
 
     @Column(nullable = false, unique = true)
     @Size(max = 30)
-    private String city;
+    private String name;
 
     @ManyToOne(cascade = CascadeType.ALL,optional = false)
     Country country;
 
-    public String getCity() {
-        return city;
+    public String getName() {
+        return name;
     }
 
     public static Finder<Long, Location> getFinder() {
         return finder;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Country getCountry() {

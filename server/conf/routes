@@ -11,11 +11,11 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 
 POST /app/register                      controllers.UserController.registerUser
 
-POST /app/login                      controllers.UserController.loginUser
+POST /app/login                         controllers.UserController.loginUser
 
-POST /app/admin/addCategory       controllers.CategoriesAdmin.addCategory
+POST /app/admin/addCategory             controllers.CategoriesAdmin.addCategory
 
-POST /app/admin/addRestaurant   controllers.RestaurantController.addRestaurant
+POST /app/admin/addRestaurant           controllers.RestaurantController.addRestaurant
 
 POST /app/getRestaurantDetails  controllers.RestaurantController.getRestaurantDetails
 
@@ -36,3 +36,11 @@ POST /app/makeReservation controllers.ReservationController.makeReservation
 POST /app/deleteReservation controllers.ReservationController.deleteReservation
 
 POST /app/setReservationToFixed controllers.ReservationController.setReservationToFixed
+
+POST /app/getAllRestaurantComments controllers.RestaurantController.getAllRestaurantComments
+
+GET /app/getListOfReservationsForUser controllers.UserController.getListOfReservationsForUser
+
+#Filters
+
+POST /app/getRestaurantsByFilter controllers.FilterController.getRestaurantsByFilter

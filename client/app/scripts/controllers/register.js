@@ -17,6 +17,9 @@ angular.module('clientApp')
       }
     );
 
+    $scope.$watchGroup(['email'] ,function () {
+      $scope.error=null;
+    });
 
     $scope.registerSubmit = function (isValid) {
 
@@ -33,15 +36,16 @@ angular.module('clientApp')
 
         $scope.confirmPassword = null;
         $scope.password = null;
-
+        $scope.loading=true;
 
         AuthenticationService.Register(payload, function (result) {
-            if (result) {
+          $scope.loading=false;
+
+          if (result) {
               $location.path('/login');
             }
             else {
-
-              $scope.error = 'There was an error registering';
+              $scope.error = 'Selected e-mail is already in use!';
             }
           }
         );

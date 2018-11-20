@@ -2,9 +2,11 @@ package controllers;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.config.Config;
 import daos.implementations.CountryDaoImpl;
@@ -24,6 +26,7 @@ import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.Optional;
 
 
 public class UserController extends Controller {
@@ -47,8 +50,8 @@ public class UserController extends Controller {
         //Mapping to temp
         UserData newUserData = mapper.convertValue(json, UserData.class);
         User newUser = mapper.convertValue(json, User.class);
-        Location newLocation = mapper.convertValue(json, Location.class);
-        Country newCountry = mapper.convertValue(json, Country.class);
+        Location newLocation = new Location(json.get("city").asText());
+        Country newCountry = new Country(json.get("country").asText());
 
         newUser.setUser_type("regular_user");
 
@@ -64,11 +67,11 @@ public class UserController extends Controller {
             newUserData.setUser(newUser);
 
             //Password encrytpion
-            PasswordSeting(newUser);
+            PasswordSetting(newUser);
 
 
             try {
-                newUser.save();
+                userDao.createUser(newUser);
             } catch (Exception e){
                 return badRequest("Invalid JSON" + e.getMessage());
             }
@@ -78,8 +81,8 @@ public class UserController extends Controller {
                     .put("id", newUser.id)
                     .put("email", newUser.getEmail())
                     .put("phone", newUserData.getPhone())
-                    .put("country", newCountry.getCountry())
-                    .put("city", newLocation.getCity())
+                    .put("country", newCountry.getName())
+                    .put("city", newLocation.getName())
                     .put("firstName", newUserData.getFirstName())
                     .put("lastName", newUserData.getLastName());
 
@@ -112,8 +115,8 @@ public class UserController extends Controller {
                     .put("id", temp.id)
                     .put("email", temp.getEmail())
                     .put("phone", temp.getUser_data().getPhone())
-                    .put("country", temp.getUser_data().getLocation().getCountry().getCountry())
-                    .put("city", temp.getUser_data().getLocation().getCity())
+                    .put("country", temp.getUser_data().getLocation().getCountry().getName())
+                    .put("city", temp.getUser_data().getLocation().getName())
                     .put("firstName", temp.getUser_data().getFirstName())
                     .put("lastName", temp.getUser_data().getLastName());
 
@@ -125,7 +128,29 @@ public class UserController extends Controller {
         }
     }
 
-    private static void PasswordSeting(User user ){
+    public Result getListOfReservationsForUser(){
+
+        try{
+            //Get token
+            Optional<String> token= request().getHeaders().get("Authorization");
+
+            //Decode token and get user_id
+            DecodedJWT jwt = JWT.decode(token.get().substring(7));
+            Long idUser = jwt.getClaim("user_id").asLong();
+
+            ObjectNode nodeValue = (new ObjectMapper()).createObjectNode();
+            nodeValue.putArray("activeReservations").addAll((ArrayNode)(new ObjectMapper()).valueToTree(userDao.getUserReservationsActive(idUser)));
+            nodeValue.putArray("pastReservations").addAll((ArrayNode)(new ObjectMapper()).valueToTree(userDao.getUserReservationsPassed(idUser)));
+
+            return ok((new ObjectMapper()).writeValueAsString(nodeValue));
+
+        }catch (Exception e){
+           return badRequest("Unauthorized! " + e.getMessage());
+        }
+
+    }
+
+    private static void PasswordSetting(User user ){
         String salt = PasswordUtil.getSalt(30);
         String securedPassword = PasswordUtil.generateSecurePassword(user.getPassword(),salt);
 
@@ -145,5 +170,6 @@ public class UserController extends Controller {
                 .withExpiresAt(Date.from(ZonedDateTime.now(ZoneId.systemDefault()).plusMinutes(10).toInstant()))
                 .sign(algorithm);
     }
+
 
 }

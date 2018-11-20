@@ -70,38 +70,41 @@ div.masthead h3 {
   height: 584px;
 }
 
-.container + .masthead > div > div > div > div > .card {
-  height: 260px;
+.card-blog {
   box-shadow: none;
+  width: 300px;
+  display: inline-block;
+  text-align: left;
 }
 
-.container + .masthead > div > div > div > div > .card > div {
+.card-blog> div {
   padding: 0px;
   margin: 0px;
-
+  width: inherit;
 }
 
-.container + .masthead > div > div > div > div > .card > img {
+.card-blog > img {
   height: 180px;
-  max-width: 300px;
-
+  width: inherit;
 }
 
-.container + .masthead > div > div > div > div > .card > div h3 {
+.card-blog > div h3 {
   font-size: 25px;
-  padding-bottom: 5px;
+  margin-bottom: 5px;
+}
+
+.heading-blog{
+  margin-bottom: 5px;
+  padding-bottom: 0px !important;
 }
 
 .container + .masthead h3 {
   font-size: 30px;
 }
 
-.p5-reserv {
-  margin-top: 15px;
-}
-
 .glyphicon-star, .glyphicon-star-empty {
   color: goldenrod;
+  font-size: 18px;
 }
 
 .dolar-full {
@@ -112,16 +115,31 @@ div.masthead h3 {
   color: gray;
 }
 
-.popular-locations-row{
-  padding-bottom: 30px;
+
+.filter-container{
+  padding-top: 60px;
 }
 
-.popular-locations-row>div>h4{
-  margin-bottom: 0px;
-  padding-bottom: 0px;
-  padding-top: 25px
+.filter-row{
+  min-height: 1480px;
 }
 
-.popular-locations-row>div>.number{
-  color: darkgray;
+.col-submit{
+  margin-top:30px;
+}
+
+
+
+
+/*carousel*/
+
+.carousel-control {
+  color: black;
+}
+
+.carousel-indicators li {
+  display: none;
+}
+.right.carousel-control, .left.carousel-control {
+  background-image: none;
 }

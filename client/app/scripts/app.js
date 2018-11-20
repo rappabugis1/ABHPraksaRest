@@ -50,6 +50,16 @@ angular
         controller: 'ReservationController'
       })
 
+      .when('/restaurants',{
+        templateUrl: 'views/restaurants.html',
+        controller: 'RestaurantsController'
+      })
+
+      .when('/myreservations',{
+        templateUrl: '/views/myreservations.html',
+        controller: 'MyReservationsController'
+      })
+
       .otherwise({
         redirectTo: '/'
       });
@@ -66,7 +76,7 @@ angular
     // redirect to login page if not logged in and trying to access a restricted page
     // if tries to go back to reservation page, itll go back to restaurant page
     $rootScope.$on('$locationChangeStart', function () {
-      var publicPages = ['/login', '/', '', '/register', '/restaurant', '/reservation'];
+      var publicPages = ['/login', '/', '', '/register', '/restaurant', '/reservation', '/restaurants'];
       var restrictedPage = publicPages.indexOf($location.path()) === -1;
       if (restrictedPage && !$localStorage.currentUser  ) {
         $location.path('/login');

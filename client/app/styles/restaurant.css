@@ -1,10 +1,19 @@
-.profile {
-  height: 182px;
-  width: 210px;
-  border: 5px;
-  border-style: solid;
-  border-radius: 5px;
-  border-color: white;
+
+
+.masthead{
+  background-color: #343a40;
+  height: 340px;
+  padding: 0;
+  overflow:hidden;
+}
+
+.masthead > img{
+  position: center;
+  filter: brightness(50%);
+  width: 100%;
+  min-height: 340px;
+  display: block;
+
 }
 
 .main{
@@ -110,12 +119,17 @@ hr {
   color: black;
 }
 
+.type-title{
+  font-size: 18px;
+}
+
 .rate{
   font-size: 30px;
 }
 
 .glyphicon-star, .glyphicon-star-empty{
   color: goldenrod;
+  font-size: 18px;
 }
 
 .dolar-full{
@@ -125,9 +139,6 @@ hr {
   color: gray;
 }
 
-.rate> span:focus{
-  outline: none;
-}
 
 .row-review{
   text-align: center;
@@ -272,4 +283,27 @@ h6{
   margin-right: 10px;
   display: inline;
   margin-top: 0 !important;
+}
+
+
+/*reviews*/
+
+.review-item-name{
+  padding-top: 10px;
+}
+
+
+.review-item > hr {
+  width:calc(100% + 60px)
+}
+
+.review-time{
+  float: right;
+  margin-top: 0px;
+}
+
+.review-card{
+  max-height: 500px;
+  overflow-x: visible;
+  overflow-y: scroll;
 }
